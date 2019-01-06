@@ -106,7 +106,7 @@ class Game:
         self.units.update_units()
         self.turn += 1
 
-    def play_game(self):                                        # Game loop
+    def play_game(self):                                       
         while True:
             self.update_game()
             if self.turn == 1:
@@ -117,8 +117,7 @@ class Game:
         self.safe_position = self.units.get_safe_position()
         self.barracks_planned = self.sites.lowest_distance(self.safe_position)
 
-
-    def generate_action(self):                            # Generate Queen move
+    def generate_action(self):                            
         if self.sites.barracks != self.barracks_planned:
             print("BUILD " + str(self.barracks_planned) + " BARRACKS-KNIGHT")
             print("TRAIN")
