@@ -9,29 +9,34 @@ barracks = "barracks"
 tower = "tower"
 mine = "mine"
 
+
 def pythagoras(a, b):
     return math.sqrt(a * a + b * b)
+
 
 def print_debug(text):
     print(text, file=sys.stderr)
 
-def build(id, type):
-    build = "BUILD "
-    if type == "barracks":
-        type = "BARRACKS-KNIGHT"
-    elif type == "tower":
-        type = "TOWER"
-    elif type == "mine":
-        type = "MINE"
-    print(build + str(id) + " " + type)
 
-def train(id):
-    train = "TRAIN"
-    if id == -1:
-        print(train)
+def build(site_id, building_type):
+    build_str = "BUILD "
+    if building_type == "barracks":
+        building_type = "BARRACKS-KNIGHT"
+    elif building_type == "tower":
+        building_type = "TOWER"
+    elif building_type == "mine":
+        building_type = "MINE"
+    print(build_str + str(site_id) + " " + building_type)
+
+
+def train(site_id):
+    train_str = "TRAIN"
+    if site_id == -1:
+        print(train_str)
     else:
-        id = str(id)
-        print(train + " " + id)
+        site_id = str(site_id)
+        print(train_str + " " + site_id)
+
 
 def move(coords):
     x, y = coords
@@ -143,6 +148,7 @@ class Sites:
         self.num_sites = int(input())
         self.safe_position = 0
 
+        self.focus = -1
         self.barracks_planned = -1
         self.barracks = -1
         self.mines = []
@@ -192,19 +198,19 @@ class Sites:
         self.sites.sort(key=lambda site: site.site_id)
 
     def are_mines(self):
-        for mine in self.mines_planned:
-            if mine not in self.mines:
-                self.focus_mine = mine
-                return mine
-        self.focus_mine = -1
+        for mine_planned in self.mines_planned:
+            if mine_planned not in self.mines:
+                self.focus = mine_planned
+                return mine_planned
+        self.focus = -1
         return -1
 
     def are_towers(self):
-        for tower in self.towers_planned:
-            if tower not in self.towers:
-                self.focus_tower = tower
-                return tower
-        self.focus_tower = -1
+        for tower_planned in self.towers_planned:
+            if tower_planned not in self.towers:
+                self.focus = tower_planned
+                return tower_planned
+        self.focus = -1
         return -1
 
     def is_barrack(self):
@@ -240,9 +246,9 @@ class Game:
         if not self.sites.is_barrack():
             build(self.sites.barracks_planned, barracks)
         elif self.sites.are_mines() != -1:
-            build(self.sites.focus_mine, mine)
+            build(self.sites.focus, mine)
         elif self.sites.are_towers() != -1:
-            build(self.sites.focus_tower, tower)
+            build(self.sites.focus, tower)
         else:
             move(self.sites.safe_position)
 
@@ -251,5 +257,7 @@ class Game:
                 train(-1)
             else:
                 train(self.sites.barracks)
+
+
 # GAME ==========================================================================
 game = Game()
