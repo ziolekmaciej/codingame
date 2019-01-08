@@ -46,7 +46,7 @@ class Unit:
         self.unit_type = unit_type
         self.health = health
 
-    
+
 class Units:
     def __init__(self):
         self.units = []
@@ -71,6 +71,7 @@ class Units:
         gold, touched_site = [int(i) for i in input().split()]
         self.gold = gold
         self.touched_site = touched_site
+
 
 class Queen:
     def __init__(self):
@@ -185,26 +186,30 @@ class Sites:
     def get_sites_for_buildings(self, coords):
         x, y = coords
         self.sites.sort(key=lambda site: site.calculate_distance(x, y))
-        self.barracks_planned = self.sites[7].site_id
-        [self.mines_planned.append(item.site_id) for item in self.sites[0:3]]
-        [self.towers_planned.append(item.site_id) for item in self.sites[3:6]]
+        self.barracks_planned = self.sites[0].site_id
+        [self.mines_planned.append(item.site_id) for item in self.sites[1:4]]
+        [self.towers_planned.append(item.site_id) for item in self.sites[4:7]]
         self.sites.sort(key=lambda site: site.site_id)
 
-    def check_mines(self):
+    def are_mines(self):
         for mine in self.mines_planned:
             if mine not in self.mines:
                 self.focus_mine = mine
                 return mine
         self.focus_mine = -1
         return -1
-        
-    def check_towers(self):
+
+    def are_towers(self):
         for tower in self.towers_planned:
             if tower not in self.towers:
                 self.focus_tower = tower
                 return tower
         self.focus_tower = -1
         return -1
+
+    def is_barrack(self):
+        return self.barracks_planned == self.barracks
+
 
 class Game:
     def __init__(self):
@@ -232,16 +237,14 @@ class Game:
         self.sites.get_sites_for_buildings(self.sites.safe_position)
 
     def generate_queen_action(self):                            # Generate Queen move
-        if self.sites.check_mines() != -1:
+        if not self.sites.is_barrack():
+            build(self.sites.barracks_planned, barracks)
+        elif self.sites.are_mines() != -1:
             build(self.sites.focus_mine, mine)
+        elif self.sites.are_towers() != -1:
+            build(self.sites.focus_tower, tower)
         else:
-            if self.sites.barracks != self.sites.barracks_planned:
-                build(self.sites.barracks_planned, barracks) 
-            else:
-                if self.sites.check_towers() != -1:
-                    build(self.sites.focus_tower, tower)
-                else:
-                    move(self.sites.safe_position)
+            move(self.sites.safe_position)
 
     def generate_training(self):                                # Generate training command
             if self.sites.barracks == -1:
